@@ -45,7 +45,7 @@ A rare special robber that gets more common as you level up (2% at level 1, up t
 - He stays up for **5 seconds** with a countdown above his head, and his bomb beeps faster as the fuse burns down.
 - It takes **2 hits** to take him down.
 - **Defuse it**: **+500 points** (times your combo) and **+3 seconds**.
-- **Too slow**: 💥 the bomb explodes. You lose **600 points** and **5 seconds**, and your combo resets.
+- **Too slow**: the bomb explodes. You lose **600 points** and **5 seconds**, and your combo resets.
 
 ### Berserk Mode
 
