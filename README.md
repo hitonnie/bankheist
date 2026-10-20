@@ -4,7 +4,7 @@
 
 A fast 2D shooting gallery game that runs in the browser on desktop and mobile. You're the guard on duty at the First National Bank: robbers and civilians pop up from behind the counters, desks, doorways and the open vault, and you have a split second to decide who to shoot.
 
-### ▶ [Play it now at bank-heist-defender.vercel.app](https://bank-heist-defender.vercel.app/)
+### [Play it now at bank-heist-defender.vercel.app](https://bank-heist-defender.vercel.app/)
 
 > Can you beat the dev's high score of **91,050**?
 
@@ -38,7 +38,7 @@ The game ends when you **shoot a civilian** or when the **clock runs out**.
 - **Headshots are free**: the bullet is refunded (**+AMMO**).
 - When the magazine is empty the gun **reloads automatically** (1.2 seconds). You can't shoot while reloading, and the clock keeps running.
 
-### 💣 The Bomber
+### The Bomber
 
 A rare special robber that gets more common as you level up (2% at level 1, up to 15%). Only one shows up at a time.
 
@@ -47,7 +47,7 @@ A rare special robber that gets more common as you level up (2% at level 1, up t
 - **Defuse it**: **+500 points** (times your combo) and **+3 seconds**.
 - **Too slow**: 💥 the bomb explodes. You lose **600 points** and **5 seconds**, and your combo resets.
 
-### 🔥 Berserk Mode
+### Berserk Mode
 
 Hit **15 robbers in a row** without missing to go **BERSERK** for 5 seconds:
 
