@@ -7,7 +7,6 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="screen-orientation" content="portrait">
 <title>Bank Heist Defender</title>
 <style>
   :root {
@@ -31,7 +30,7 @@
     touch-action: none;
   }
 
-  /* ---------- game area: a portrait box (720 wide, 1280-1560 tall), centred ---------- */
+  /* ---------- game area: fills the window (portrait or landscape bank, see LAYOUTS) ---------- */
   #stage { position: fixed; inset: 0; overflow: hidden; }
   #wrap {
     position: absolute; left: 0; top: 0; overflow: hidden;
@@ -57,27 +56,14 @@
   #btnMute { right: calc(var(--u) * 12); }
   #btnPause { right: calc(var(--u) * 22 + var(--b)); }
   #btnFull { right: calc(var(--u) * 32 + var(--b) * 2); }
+  /* landscape: one-row HUD, so smaller buttons */
+  body.land #wrap { --b: max(calc(var(--u) * 44), 28px); }
+  body.land.touch #wrap { --b: max(calc(var(--u) * 44), 40px); }
+  body.land .hudbtn { top: calc(var(--u) * 7); }
+  body.land #btnMute { right: calc(var(--u) * 10); }
+  body.land #btnPause { right: calc(var(--u) * 18 + var(--b)); }
+  body.land #btnFull { right: calc(var(--u) * 26 + var(--b) * 2); }
   .hidden { display: none !important; }
-
-  /* ---------- phones/tablets held sideways: ask to turn upright ---------- */
-  #turnOverlay {
-    position: fixed; inset: 0; z-index: 100; display: none;
-    flex-direction: column; align-items: center; justify-content: center; gap: 18px;
-    padding: 24px; text-align: center;
-    background: radial-gradient(ellipse at center, #1a2130 0%, #06080c 80%) #06080c;
-  }
-  body.turn #turnOverlay { display: flex; }
-  #turnOverlay .phone {
-    width: 62px; height: 104px; border: 5px solid var(--gold); border-radius: 14px; position: relative;
-    animation: turn 2.2s ease-in-out infinite;
-  }
-  #turnOverlay .phone::after {
-    content: ''; position: absolute; left: 50%; bottom: 7px; width: 16px; height: 4px; margin-left: -8px;
-    border-radius: 2px; background: var(--gold);
-  }
-  @keyframes turn { 0%, 25% { transform: rotate(-90deg); } 60%, 100% { transform: rotate(0deg); } }
-  #turnOverlay b { font-family: var(--display); font-size: 24px; color: var(--gold); letter-spacing: .03em; }
-  #turnOverlay span { color: var(--muted); font-size: 15px; max-width: 320px; }
 
   /* ---------- overlay screens (inside the game box) ---------- */
   .overlay {
@@ -186,6 +172,51 @@
   body.short .stat { padding: 6px 8px; }
   body.short .stat b { font-size: 17px; }
   body.short .stat.big b { font-size: 34px; }
+
+  /* ---------- landscape screens (PC, tablets and phones held sideways) ---------- */
+  body.land .panel { max-width: 640px; }
+  body.land #overScreen .panel { max-width: 720px; }
+  body.land .stats { grid-template-columns: repeat(4, 1fr); }
+  body.land .stat { flex-direction: column; justify-content: center; text-align: center; gap: 2px; }
+  body.land #pauseScreen .btns { flex-direction: row; }
+  body.land #pauseScreen .btn, body.land .btn.primary { min-width: 0; }
+  body.land #btnPlay, body.land #btnAgain { min-width: 40%; }
+  /* landscape start screen: two columns (title, rules and PLAY | the legend) so it fits laptops */
+  .head { grid-area: head; }
+  .legend { grid-area: legend; }
+  .rules { grid-area: rules; }
+  #startScreen .btns { grid-area: play; }
+  #startScreen .foot { grid-area: foot; }
+  body.land #startScreen .panel {
+    max-width: 900px; display: grid; column-gap: 22px; align-items: center;
+    grid-template-columns: 1.15fr 1fr;
+    grid-template-areas: "head legend" "rules legend" "play legend" "foot foot";
+  }
+  body.land .legend { margin: 0; }
+  /* short landscape screens (phones held sideways): tighter menus */
+  body.compact .overlay { padding: 8px; }
+  body.compact .panel { padding: 12px 18px; border-radius: 16px; }
+  body.compact .eyebrow { display: none; }
+  body.compact h1 { font-size: 30px; margin-bottom: 6px; }
+  body.compact .lead { font-size: 15px; margin-bottom: 6px; }
+  body.compact .lead br { display: none; }
+  body.compact #startScreen .panel { column-gap: 18px; }
+  body.compact .card canvas { max-width: 80px; }
+  body.compact .card b { font-size: 13px; }
+  body.compact .card small { font-size: 10px; }
+  body.compact .rules { font-size: 11.5px; line-height: 1.35; margin-bottom: 8px; }
+  body.compact .rules li { margin-bottom: 2px; }
+  body.compact .foot { margin-top: 4px; font-size: 12px; line-height: 1.4; }
+  body.compact .btn { font-size: 17px; }
+  body.compact #pauseScreen h1 { margin-bottom: 14px; }
+  body.compact #overReason { font-size: 24px; margin: 4px 0 2px; }
+  body.compact .newhigh { margin-top: 2px; font-size: 13px; }
+  body.compact .stats { gap: 6px; margin: 8px 0 10px; }
+  body.compact .stat { padding: 4px; border-radius: 9px; }
+  body.compact .stat span { font-size: 9px; letter-spacing: .05em; }
+  body.compact .stat b { font-size: 17px; }
+  body.compact .stat.big b { font-size: 28px; }
+  body.compact #overScreen .btn { padding: .45em 1.3em; }
 </style>
 </head>
 <body>
@@ -202,9 +233,11 @@
   <!-- START SCREEN -->
   <div id="startScreen" class="overlay show">
     <div class="panel">
-      <div class="eyebrow">&#9733; SECURITY ON DUTY &#9733;</div>
-      <h1>BANK HEIST<br>DEFENDER</h1>
-      <p class="lead"><span class="shoot">Shoot robbers.</span><br><span class="safe">Don't shoot civilians.</span></p>
+      <div class="head">
+        <div class="eyebrow">&#9733; SECURITY ON DUTY &#9733;</div>
+        <h1>BANK HEIST<br>DEFENDER</h1>
+        <p class="lead"><span class="shoot">Shoot robbers.</span><br><span class="safe">Don't shoot civilians.</span></p>
+      </div>
       <div class="legend">
         <div class="card bad"><canvas id="legRobber" width="130" height="140"></canvas><b>ROBBER</b><small>Red mask &middot; SHOOT!</small></div>
         <div class="card bomb"><canvas id="legBomb" width="130" height="140"></canvas><b>BOMBER</b><small>2 hits before it blows!</small></div>
@@ -267,12 +300,6 @@
 </div>
 </div><!-- /stage -->
 
-<div id="turnOverlay" role="alert">
-  <div class="phone"></div>
-  <b>Turn your phone upright</b>
-  <span>Bank Heist Defender is played in portrait. The game is paused until you turn your device back.</span>
-</div>
-
 <script>
 (() => {
 'use strict';
@@ -280,11 +307,7 @@
 /* =====================================================================
    CONFIG
    ===================================================================== */
-// Portrait world: 720 logical px wide. The scene is designed for 720x1280 and the screen
-// grows taller (up to 1560) on long phones; the extra height is split above and below.
-const W = 720, SCENE_H = 1280, MAX_H = 1560, TAU = Math.PI * 2;
-let H = SCENE_H, OY = 0;                   // screen height and scene offset (screen y = scene y + OY)
-const HUD_H = 152;                         // top HUD height (screen px)
+const TAU = Math.PI * 2;
 const FONT = '"Arial Black","Segoe UI Black","Helvetica Neue",Impact,Arial,sans-serif';
 const CHAR_H = 160;                        // visible body height (local units) when fully up
 const RISE_T = 0.16, DUCK_T = 0.14, HIT_T = 0.6;   // base pop-up / duck times at level 1
@@ -302,27 +325,80 @@ const BOMB_T = 5, BOMB_HP = 2, BOMB_POINTS = 500, BOMB_TIME_BONUS = 3, BOMB_PENA
 const BERSERK_STREAK = 15, BERSERK_T = 5, MINIGUN_RATE = 15, BERSERK_TIME_HIT = 0.5;
 const HS_KEY = 'bankHeistDefender.highScore';
 const MUTE_KEY = 'bankHeistDefender.muted';
-// Scene geometry
-const FLOOR_Y = 560;
-const VAULT = { x: 360, y: 400, r: 94, R: 116 };
-const GUN_PIVOT = { x: W / 2, y: SCENE_H + 40 };          // y follows the bottom of the screen (resize)
-const GUN_SCALE = 0.95, GUN_LEN = 256, MINIGUN_LEN = 318;
-const GUN_MIN_ANGLE = -Math.PI + 0.2, GUN_MAX_ANGLE = -0.2;
+const GUN_LEN = 256, MINIGUN_LEN = 318;
 
-// Pop-up spots, back row (0) to front row (3). coverTop = line characters rise above.
-// Rows are spaced so no two rows' characters ever overlap on screen.
-const SPOTS = [
-  { x: 92,  coverTop: 486,  s: 0.70, kind: 'door',    row: 0 },
-  { x: 360, coverTop: 450,  s: 0.70, kind: 'vault',   row: 0 },
-  { x: 628, coverTop: 486,  s: 0.70, kind: 'door',    row: 0 },
-  { x: 190, coverTop: 684,  s: 0.85, kind: 'counter', row: 1, label: 'TELLER 1' },
-  { x: 530, coverTop: 684,  s: 0.85, kind: 'counter', row: 1, label: 'TELLER 2' },
-  { x: 150, coverTop: 910,  s: 1.00, kind: 'desk',    row: 2 },
-  { x: 570, coverTop: 910,  s: 1.00, kind: 'desk',    row: 2 },
-  { x: 140, coverTop: 1120, s: 1.15, kind: 'sofa',    row: 3 },
-  { x: 580, coverTop: 1120, s: 1.15, kind: 'sofa',    row: 3 },
-].map((s, i) => Object.assign({ id: i, char: null, cooldown: 0 }, s));
-const ROWS = [0, 1, 2, 3].map(r => SPOTS.filter(s => s.row === r));
+/* ---------------------------------------------------------------------
+   SCENE LAYOUTS — the game picks one from the window shape:
+   - 'port' (720x1280): screens taller than wide (phones and tablets held upright)
+   - 'land' (1280x720): everything else (PCs, laptops, tablets and phones held sideways)
+   Gameplay is identical; only the bank's geometry changes. The screen is always filled:
+   extra wall and floor are drawn around the scene (OX / OY on each side) to match the
+   window's shape, up to maxOX / maxOY.
+   --------------------------------------------------------------------- */
+const makeSpots = list => list.map((s, i) => Object.assign({ id: i, char: null, cooldown: 0 }, s));
+const LAYOUTS = {
+  port: {
+    name: 'port', w: 720, h: 1280, maxOX: 280, maxOY: 220,
+    floorY: 560, vpY: -300, floorStep: 130, carpetHalf: 55,
+    vault: { x: 360, y: 400, r: 94, R: 116 },
+    gunDrop: 40, gunScale: 0.95, gunMinA: -Math.PI + 0.2, gunMaxA: -0.2,
+    reloadPose: piv => ({ x: 320, y: piv.y - 70, a: -0.5 }),        // low, tilted to the right
+    aimHome: { x: 360, y: 700 }, aimSweep: [250, 160],
+    // Pop-up spots, back row (0) to front row (3). coverTop = line characters rise above.
+    // Rows are spaced so no two rows' characters ever overlap on screen.
+    spots: makeSpots([
+      { x: 92,  coverTop: 486,  s: 0.70, kind: 'door',    row: 0 },
+      { x: 360, coverTop: 450,  s: 0.70, kind: 'vault',   row: 0 },
+      { x: 628, coverTop: 486,  s: 0.70, kind: 'door',    row: 0 },
+      { x: 190, coverTop: 684,  s: 0.85, kind: 'counter', row: 1, label: 'TELLER 1' },
+      { x: 530, coverTop: 684,  s: 0.85, kind: 'counter', row: 1, label: 'TELLER 2' },
+      { x: 150, coverTop: 910,  s: 1.00, kind: 'desk',    row: 2 },
+      { x: 570, coverTop: 910,  s: 1.00, kind: 'desk',    row: 2 },
+      { x: 140, coverTop: 1120, s: 1.15, kind: 'sofa',    row: 3 },
+      { x: 580, coverTop: 1120, s: 1.15, kind: 'sofa',    row: 3 }
+    ]),
+    deco: {
+      crownY: 150, panel: { step: 120, inset: 10, w: 100, top: 188, h: 272 }, wainPanel: { step: 120, inset: 12, w: 96, h: 50 },
+      sign: { w: 348, y: 194, h: 44, font: 18 },
+      clocks: [[92, 238, 30]],
+      windows: [[600, 192, 56, 72], [-104, 192, 56, 72], [768, 192, 56, 72]],   // the last two show on wider screens
+      pillars: [197, 547, -170, 890], pillarTop: 184, pillarHW: 17,
+      doors: [[92, 'OFFICE', false], [628, 'EXIT', true]], doorTop: 312, doorHW: 58
+    }
+  },
+  land: {
+    name: 'land', w: 1280, h: 720, maxOX: 520, maxOY: 280,
+    floorY: 455, vpY: -260, floorStep: 150, carpetHalf: 110,
+    vault: { x: 640, y: 300, r: 104, R: 130 },
+    gunDrop: 50, gunScale: 1, gunMinA: -Math.PI + 0.35, gunMaxA: -0.35,
+    reloadPose: piv => ({ x: piv.x - 30, y: piv.y - 80, a: -0.28 }),
+    aimHome: { x: 640, y: 330 }, aimSweep: [420, 60],
+    spots: makeSpots([
+      { x: 110,  coverTop: 388, s: 0.72, kind: 'door',    row: 0 },
+      { x: 640,  coverTop: 360, s: 0.72, kind: 'vault',   row: 0 },
+      { x: 1170, coverTop: 388, s: 0.72, kind: 'door',    row: 0 },
+      { x: 390,  coverTop: 500, s: 0.90, kind: 'counter', row: 1, label: 'TELLER 1' },
+      { x: 890,  coverTop: 500, s: 0.90, kind: 'counter', row: 1, label: 'TELLER 2' },
+      { x: 180,  coverTop: 590, s: 1.08, kind: 'desk',    row: 2 },
+      { x: 1100, coverTop: 590, s: 1.08, kind: 'desk',    row: 2 }
+    ]),
+    deco: {
+      crownY: 64, panel: { step: 160, inset: 12, w: 136, top: 100, h: 256 }, wainPanel: { step: 128, inset: 14, w: 100, h: 48 },
+      sign: { w: 380, y: 92, h: 46, font: 21 },
+      clocks: [[430, 190, 33]],
+      windows: [[850, 118, 82, 124], [-210, 118, 82, 124], [1408, 118, 82, 124]],
+      pillars: [300, 980, -70, 1350], pillarTop: 96, pillarHW: 24,
+      doors: [[110, 'OFFICE', false], [1170, 'EXIT', true]], doorTop: 222, doorHW: 64
+    }
+  }
+};
+for (const L of Object.values(LAYOUTS)) L.rows = [0, 1, 2, 3].map(r => L.spots.filter(s => s.row === r)).filter(r => r.length);
+
+// Active layout and screen geometry (set by applyLayout() / resize()).
+// Scene coordinates: SCENE_W x SCENE_H. Screen (logical) coordinates: W x H = scene + OX/OY on each side.
+let LAY, SCENE_W, SCENE_H, FLOOR_Y, VAULT, SPOTS, ROWS;
+let W = 1280, H = 720, OX = 0, OY = 0;
+const GUN_PIVOT = { x: 640, y: 770 };                       // bottom-centre of the screen (resize)
 
 const SKINS = ['#f2c9a0', '#e0ac7e', '#c68953', '#8d5a3b', '#f5d6b8', '#6b4429'];
 const HAIRS = ['#2b1d14', '#5a3a1e', '#c8902f', '#1a1a1a', '#8a4b2a', '#d9d4c7'];
@@ -344,7 +420,9 @@ const easeInQuad = t => t * t;
 const easeInCubic = t => t * t * t;
 const fmt = n => Math.round(n).toLocaleString('en-US');
 const $ = id => document.getElementById(id);
-const sceneTop = () => HUD_H - OY;         // scene y just below the HUD
+// Top HUD height in screen px: two rows in portrait, one (scaled up on small screens) in landscape.
+const hudH = () => (LAY.name === 'port' ? 152 : Math.round(58 * view.uiK));
+const sceneTop = () => hudH() - OY;        // scene y just below the HUD
 
 const store = {
   get(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } },
@@ -413,9 +491,9 @@ const S = Object.assign({
   highScore: parseInt(store.get(HS_KEY), 10) || 0
 }, freshRunState());
 const chars = [], particles = [], popups = [], timeFloaters = [], holes = [], tracers = [], explosions = [];
-const aim = { x: W / 2, y: 700, mouse: false, inside: false, tapT: 0 };   // scene coordinates
+const aim = { x: 360, y: 700, mouse: false, inside: false, tapT: 0 };   // scene coordinates
 const hold = { down: false, id: null };            // trigger held (mouse button / finger) for the minigun
-const view = { wl: 0, wt: 0, ww: W, wh: H, cssScale: 1, touch: false };
+const view = { wl: 0, wt: 0, ww: W, wh: H, cssScale: 1, uiK: 1, touch: false };
 const gun = { angle: -Math.PI / 2, recoil: 0, flash: 0, flashRot: 0 };
 let nextId = 1;
 
@@ -700,7 +778,7 @@ function startWave(d) {
     if (civ) civs++;
     S.burstQueue.push({ delay: (i / (n - 1)) * rand(0.32, 0.45), type: civ ? 'civilian' : 'robber' });
   }
-  addPopup(W / 2, sceneTop() + 110, 'INCOMING!', '#ff7a4a', 34);
+  addPopup(SCENE_W / 2, sceneTop() + 110, 'INCOMING!', '#ff7a4a', 34);
   return true;
 }
 
@@ -814,11 +892,11 @@ function isHeadshot(c, x, y) {
    GAMEPLAY ACTIONS — shooting, ammo & reload
    ===================================================================== */
 function muzzlePos() {
-  const a = gun.angle, c = Math.cos(a), s = Math.sin(a), len = (S.berserk ? MINIGUN_LEN : GUN_LEN) * GUN_SCALE;
+  const a = gun.angle, c = Math.cos(a), s = Math.sin(a), len = (S.berserk ? MINIGUN_LEN : GUN_LEN) * LAY.gunScale;
   return { x: GUN_PIVOT.x + c * len + s * 8, y: GUN_PIVOT.y + s * len - c * 8 };
 }
 function aimGunAt(x, y) {
-  gun.angle = clamp(Math.atan2(y - GUN_PIVOT.y, x - GUN_PIVOT.x), GUN_MIN_ANGLE, GUN_MAX_ANGLE);
+  gun.angle = clamp(Math.atan2(y - GUN_PIVOT.y, x - GUN_PIVOT.x), LAY.gunMinA, LAY.gunMaxA);
 }
 
 function shoot(x, y, touch) {
@@ -998,7 +1076,7 @@ function endBerserk() {
   hold.down = false;
   Sound.setMinigun(false);
   Sound.play('berserkEnd');
-  addPopup(W / 2, sceneTop() + 90, 'BERSERK OVER', '#ffb0a0', 32);
+  addPopup(SCENE_W / 2, sceneTop() + 90, 'BERSERK OVER', '#ffb0a0', 32);
   updateHudButtons();
 }
 // Runs only while playing, so pausing freezes the berserk timer too.
@@ -1112,8 +1190,9 @@ function buzz(pattern) {
 }
 function addPopup(x, y, text, color, size, delay = 0) {
   // keep the whole text on screen (rough width of the heavy display font, incl. the 1.2x pop scale)
+  // (popups live in scene coordinates; the visible screen spans -OX .. SCENE_W + OX)
   const half = Math.min(W / 2 - 12, text.length * size * 0.4);
-  popups.push({ x: clamp(x, half + 12, W - half - 12), y: Math.max(sceneTop() + 60, y), text, color, size, t: -delay, max: 0.95 });
+  popups.push({ x: clamp(x, half + 12 - OX, SCENE_W + OX - half - 12), y: Math.max(sceneTop() + 60, y), text, color, size, t: -delay, max: 0.95 });
   if (popups.length > 40) popups.shift();
 }
 
@@ -1216,8 +1295,8 @@ function updateEffects(dt) {
   if (Math.abs(S.score - S.shownScore) < 1) S.shownScore = S.score;
 
   if (S.mode === 'menu') {              // idle sweep for the attract screen
-    aim.x = W / 2 + Math.sin(S.clock * 0.8) * 250;
-    aim.y = 700 + Math.cos(S.clock * 0.5) * 160;
+    aim.x = LAY.aimHome.x + Math.sin(S.clock * 0.8) * LAY.aimSweep[0];
+    aim.y = LAY.aimHome.y + Math.cos(S.clock * 0.5) * LAY.aimSweep[1];
   }
   if (S.mode !== 'dying' && S.mode !== 'over') aimGunAt(aim.x, aim.y);
 }
@@ -1251,24 +1330,25 @@ function update(dt) {
 }
 
 /* =====================================================================
-   RENDER — scenery (scene coordinates; extends above/below on tall screens)
+   RENDER — scenery (scene coordinates). The wall and floor are drawn past the scene's
+   edges (OX / OY) so any screen shape is filled; the layout supplies all positions.
    ===================================================================== */
 const canvas = $('game');
 const ctx = canvas.getContext('2d');
 const bgCanvas = document.createElement('canvas');
 let scale = 1;
 
-const VP = { x: W / 2, y: -300 };                    // floor vanishing point
-const floorX = (x0, y) => VP.x + ((x0 - VP.x) * (y - VP.y)) / (SCENE_H - VP.y);
+// Floor perspective: x0 is a position on the scene's bottom edge, projected to height y.
+const floorX = (x0, y) => SCENE_W / 2 + ((x0 - SCENE_W / 2) * (y - LAY.vpY)) / (SCENE_H - LAY.vpY);
 
 function drawFloor(g, bot) {
   const rows = [];
   for (let y = FLOOR_Y, h = 20; ; y += h, h *= 1.17) { rows.push(y); if (y > bot) break; }
-  const step = 130;
+  const step = LAY.floorStep, cx = SCENE_W / 2;
   for (let r = 0; r < rows.length - 1; r++) {
     const y0 = rows[r], y1 = rows[r + 1];
-    for (let i = -9; i <= 9; i++) {
-      const xa = VP.x + (i - 0.5) * step, xb = xa + step;
+    for (let i = -12; i <= 12; i++) {
+      const xa = cx + (i - 0.5) * step, xb = xa + step;
       g.beginPath();
       g.moveTo(floorX(xa, y0), y0); g.lineTo(floorX(xb, y0), y0);
       g.lineTo(floorX(xb, y1), y1); g.lineTo(floorX(xa, y1), y1);
@@ -1279,53 +1359,60 @@ function drawFloor(g, bot) {
   }
   const gr = g.createLinearGradient(0, FLOOR_Y, 0, FLOOR_Y + 130);
   gr.addColorStop(0, 'rgba(60,40,20,0.4)'); gr.addColorStop(1, 'rgba(60,40,20,0)');
-  g.fillStyle = gr; g.fillRect(0, FLOOR_Y, W, 130);
+  g.fillStyle = gr; g.fillRect(-OX, FLOOR_Y, SCENE_W + 2 * OX, 130);
   // carpet runner from the vault to the guard
+  const ch = LAY.carpetHalf, inset = ch * 0.14, a = cx - ch, b = cx + ch;
   g.beginPath();
-  g.moveTo(floorX(305, FLOOR_Y), FLOOR_Y); g.lineTo(floorX(415, FLOOR_Y), FLOOR_Y);
-  g.lineTo(floorX(415, bot), bot); g.lineTo(floorX(305, bot), bot); g.closePath();
+  g.moveTo(floorX(a, FLOOR_Y), FLOOR_Y); g.lineTo(floorX(b, FLOOR_Y), FLOOR_Y);
+  g.lineTo(floorX(b, bot), bot); g.lineTo(floorX(a, bot), bot); g.closePath();
   g.fillStyle = '#7d1a1f'; g.fill();
   g.strokeStyle = '#d9a63a'; g.lineWidth = 3;
   g.beginPath();
-  g.moveTo(floorX(316, FLOOR_Y), FLOOR_Y); g.lineTo(floorX(316, bot), bot);
-  g.moveTo(floorX(404, FLOOR_Y), FLOOR_Y); g.lineTo(floorX(404, bot), bot);
+  g.moveTo(floorX(a + inset, FLOOR_Y), FLOOR_Y); g.lineTo(floorX(a + inset, bot), bot);
+  g.moveTo(floorX(b - inset, FLOOR_Y), FLOOR_Y); g.lineTo(floorX(b - inset, bot), bot);
   g.stroke();
 }
 
-function drawPillar(g, x) {
-  const gr = g.createLinearGradient(x - 20, 0, x + 20, 0);
+// Fluted marble column from y0 (below the capital) down to the floor; hw = half the shaft width.
+function drawPillar(g, x, y0, hw) {
+  const y1 = FLOOR_Y - 8;
+  const gr = g.createLinearGradient(x - hw - 3, 0, x + hw + 3, 0);
   gr.addColorStop(0, '#cfc3a8'); gr.addColorStop(0.35, '#fbf5e8'); gr.addColorStop(1, '#b3a584');
-  g.fillStyle = gr; g.fillRect(x - 17, 182, 34, 370);
+  g.fillStyle = gr; g.fillRect(x - hw, y0, hw * 2, y1 - y0);
   g.strokeStyle = 'rgba(120,100,60,.25)'; g.lineWidth = 2;
-  for (let i = -1; i <= 1; i++) { g.beginPath(); g.moveTo(x + i * 9, 190); g.lineTo(x + i * 9, 534); g.stroke(); }
-  g.fillStyle = '#e9dfc8'; g.fillRect(x - 25, 172, 50, 12);
-  g.fillStyle = '#d4c6a6'; g.fillRect(x - 21, 184, 42, 6);
-  g.fillStyle = '#c4b592'; g.fillRect(x - 21, 538, 42, 8);
-  g.fillStyle = '#e0d4b8'; g.fillRect(x - 24, 546, 48, 14);
+  const n = hw >= 20 ? 2 : 1;
+  for (let i = -n; i <= n; i++) { g.beginPath(); g.moveTo(x + i * 9, y0 + 8); g.lineTo(x + i * 9, y1 - 18); g.stroke(); }
+  g.fillStyle = '#e9dfc8'; g.fillRect(x - hw * 1.5, y0 - 12, hw * 3, 12);
+  g.fillStyle = '#d4c6a6'; g.fillRect(x - hw * 1.25, y0, hw * 2.5, 7);
+  g.fillStyle = '#c4b592'; g.fillRect(x - hw * 1.25, y1 - 14, hw * 2.5, 8);
+  g.fillStyle = '#e0d4b8'; g.fillRect(x - hw * 1.42, y1 - 6, hw * 2.84, 14);
 }
 
-function drawDoor(g, x, label, exit) {
-  g.fillStyle = '#5a3a20'; g.fillRect(x - 58, 312, 116, 248);
-  g.fillStyle = '#7a5230'; g.fillRect(x - 58, 312, 116, 6);
-  const gr = g.createLinearGradient(0, 326, 0, 560);
+// Doorway from y0 to the floor; hw = half the frame width. The lower half-door is a cover.
+function drawDoor(g, x, label, exit, y0, hw) {
+  const iw = hw - 12;
+  g.fillStyle = '#5a3a20'; g.fillRect(x - hw, y0, hw * 2, FLOOR_Y - y0);
+  g.fillStyle = '#7a5230'; g.fillRect(x - hw, y0, hw * 2, 6);
+  const gr = g.createLinearGradient(0, y0 + 14, 0, FLOOR_Y);
   gr.addColorStop(0, '#120d0a'); gr.addColorStop(1, '#2c2119');
-  g.fillStyle = gr; g.fillRect(x - 46, 326, 92, 234);
-  g.fillStyle = 'rgba(255,220,150,.05)'; g.fillRect(x - 26, 326, 52, 234);
+  g.fillStyle = gr; g.fillRect(x - iw, y0 + 14, iw * 2, FLOOR_Y - y0 - 14);
+  g.fillStyle = 'rgba(255,220,150,.05)'; g.fillRect(x - iw * 0.56, y0 + 14, iw * 1.12, FLOOR_Y - y0 - 14);
   if (exit) {
-    g.fillStyle = '#0f5f2a'; g.beginPath(); rr(g, x - 30, 282, 60, 24, 3); g.fill();
-    drawText(g, label, x, 300, 15, '#c8ffd8', { stroke: false });
+    g.fillStyle = '#0f5f2a'; g.beginPath(); rr(g, x - 30, y0 - 30, 60, 24, 3); g.fill();
+    drawText(g, label, x, y0 - 12, 15, '#c8ffd8', { stroke: false });
   } else {
-    g.fillStyle = '#c9a24a'; g.beginPath(); rr(g, x - 40, 284, 80, 21, 3); g.fill();
-    drawText(g, label, x, 300, 13, '#3a2a0a', { stroke: false });
+    g.fillStyle = '#c9a24a'; g.beginPath(); rr(g, x - 40, y0 - 28, 80, 21, 3); g.fill();
+    drawText(g, label, x, y0 - 12, 13, '#3a2a0a', { stroke: false });
   }
 }
 
 function drawVault(g) {
-  const { x, y, r, R } = VAULT;
-  g.fillStyle = '#5d636b'; g.fillRect(x - 84, 500, 168, 60);              // base plinth
-  g.fillStyle = 'rgba(255,255,255,.15)'; g.fillRect(x - 84, 500, 168, 3);
+  const { x, y, r, R } = VAULT, k = R / 116;
+  const pw = R * 0.72, py = y + R - 16;
+  g.fillStyle = '#5d636b'; g.fillRect(x - pw, py, pw * 2, FLOOR_Y - py);        // base plinth
+  g.fillStyle = 'rgba(255,255,255,.15)'; g.fillRect(x - pw, py, pw * 2, 3);
   g.fillStyle = 'rgba(40,28,14,.35)'; g.beginPath(); g.arc(x + 5, y + 7, R + 7, 0, TAU); g.fill();
-  let gr = g.createRadialGradient(x - 45, y - 55, 10, x, y, R + 4);
+  let gr = g.createRadialGradient(x - 45 * k, y - 55 * k, 10, x, y, R + 4);
   gr.addColorStop(0, '#f1f3f5'); gr.addColorStop(0.6, '#9aa1a9'); gr.addColorStop(1, '#596069');
   g.fillStyle = gr; g.beginPath(); g.arc(x, y, R, 0, TAU); g.fill();
   g.strokeStyle = '#3e434a'; g.lineWidth = 3; g.stroke();
@@ -1341,7 +1428,7 @@ function drawVault(g) {
   g.fillStyle = gr; g.fillRect(x - r, y - r, 2 * r, 2 * r);
   g.strokeStyle = 'rgba(214,170,90,.28)'; g.lineWidth = 1.5;
   g.fillStyle = 'rgba(214,170,90,.3)';
-  for (let by = y - r; by < y + 50; by += 19) {
+  for (let by = y - r; by < y + r * 0.53; by += 19) {
     for (let bx = x - r; bx < x + r; bx += 26) { g.strokeRect(bx + 2, by + 2, 22, 15); g.fillRect(bx + 11, by + 8, 4, 2); }
   }
   gr = g.createRadialGradient(x, y, r * 0.55, x, y, r);
@@ -1349,20 +1436,21 @@ function drawVault(g) {
   g.fillStyle = gr; g.fillRect(x - r, y - r, 2 * r, 2 * r);
   g.restore();
   // hinges + open door seen edge-on
-  g.fillStyle = '#4b5058'; g.fillRect(x + R - 8, y - 64, 28, 16); g.fillRect(x + R - 8, y + 48, 28, 16);
-  const dx = x + R + 26;
-  dot(g, dx - 7, y, 22, R - 6, '#4a4f57');
-  gr = g.createLinearGradient(dx - 22, 0, dx + 22, 0);
+  g.fillStyle = '#4b5058'; g.fillRect(x + R - 8, y - 64 * k, 28 * k, 16); g.fillRect(x + R - 8, y + 48 * k, 28 * k, 16);
+  const dx = x + R + 26 * k, dw = 22 * k;
+  dot(g, dx - 7 * k, y, dw, R - 6, '#4a4f57');
+  gr = g.createLinearGradient(dx - dw, 0, dx + dw, 0);
   gr.addColorStop(0, '#7d848d'); gr.addColorStop(0.5, '#d2d6db'); gr.addColorStop(1, '#80878f');
-  g.fillStyle = gr; g.beginPath(); g.ellipse(dx, y, 22, R - 6, 0, 0, TAU); g.fill();
+  g.fillStyle = gr; g.beginPath(); g.ellipse(dx, y, dw, R - 6, 0, 0, TAU); g.fill();
   g.strokeStyle = '#3e434a'; g.lineWidth = 2; g.stroke();
   g.strokeStyle = '#5a6068'; g.lineWidth = 3;
-  g.beginPath(); g.ellipse(dx + 2, y, 8, 28, 0, 0, TAU); g.stroke();
+  const wx = 8 * k, wy = 28 * k;
+  g.beginPath(); g.ellipse(dx + 2, y, wx, wy, 0, 0, TAU); g.stroke();
   for (let i = 0; i < 3; i++) {
     const a = (i / 3) * Math.PI;
     g.beginPath();
-    g.moveTo(dx + 2 + Math.cos(a) * 8, y + Math.sin(a) * 28);
-    g.lineTo(dx + 2 - Math.cos(a) * 8, y - Math.sin(a) * 28);
+    g.moveTo(dx + 2 + Math.cos(a) * wx, y + Math.sin(a) * wy);
+    g.lineTo(dx + 2 - Math.cos(a) * wx, y - Math.sin(a) * wy);
     g.stroke();
   }
 }
@@ -1394,76 +1482,80 @@ function drawWindow(g, x, y, w, h) {
 }
 
 function drawBackground(g) {
-  const top = -OY, bot = SCENE_H + OY;
-  // wall (continues up under the HUD on tall screens)
-  let gr = g.createLinearGradient(0, top, 0, FLOOR_Y);
+  const D = LAY.deco;
+  const left = -OX, width = SCENE_W + 2 * OX, top = -OY, bot = SCENE_H + OY;
+  const startX = step => Math.floor(left / step) * step;          // keep repeating patterns aligned
+  // wall (continues above the scene on tall screens and to the sides on wide ones)
+  let gr = g.createLinearGradient(0, Math.min(top, 0), 0, FLOOR_Y);
   gr.addColorStop(0, '#a8916a'); gr.addColorStop(0.35, '#e2d2ae'); gr.addColorStop(1, '#efe3c8');
-  g.fillStyle = gr; g.fillRect(0, top, W, FLOOR_Y - top);
+  g.fillStyle = gr; g.fillRect(left, top, width, FLOOR_Y - top);
   // ceiling beams above the crown molding
   g.fillStyle = 'rgba(70,48,26,.35)';
-  for (let y = 120; y > top - 40; y -= 64) g.fillRect(0, y, W, 10);
+  for (let y = D.crownY - 30; y > top - 40; y -= 64) g.fillRect(left, y, width, 10);
   // marble wall panels
-  for (let x = 0; x < W; x += 120) {
-    g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(x + 10, 188, 100, 272);
-    g.strokeStyle = 'rgba(120,92,52,.25)'; g.lineWidth = 2; g.strokeRect(x + 10, 188, 100, 272);
+  const P = D.panel;
+  for (let x = startX(P.step); x < left + width; x += P.step) {
+    g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(x + P.inset, P.top, P.w, P.h);
+    g.strokeStyle = 'rgba(120,92,52,.25)'; g.lineWidth = 2; g.strokeRect(x + P.inset, P.top, P.w, P.h);
   }
   // crown molding
-  g.fillStyle = '#a88a58'; g.fillRect(0, 150, W, 18);
-  g.fillStyle = '#d9c08e'; g.fillRect(0, 150, W, 4);
-  g.fillStyle = '#7a5f38'; g.fillRect(0, 166, W, 3);
+  g.fillStyle = '#a88a58'; g.fillRect(left, D.crownY, width, 18);
+  g.fillStyle = '#d9c08e'; g.fillRect(left, D.crownY, width, 4);
+  g.fillStyle = '#7a5f38'; g.fillRect(left, D.crownY + 16, width, 3);
   g.fillStyle = 'rgba(90,66,36,.35)';
-  for (let x = 6; x < W; x += 22) g.fillRect(x, 156, 10, 8);
+  for (let x = startX(22) + 6; x < left + width; x += 22) g.fillRect(x, D.crownY + 6, 10, 8);
   // wainscot
-  g.fillStyle = '#5b3920'; g.fillRect(0, 474, W, 80);
-  g.fillStyle = '#82562f'; g.fillRect(0, 468, W, 9);
-  g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(0, 468, W, 2);
-  for (let x = 0; x < W; x += 120) {
-    g.strokeStyle = 'rgba(0,0,0,.3)'; g.lineWidth = 3; g.strokeRect(x + 12, 488, 96, 50);
-    g.strokeStyle = 'rgba(255,220,170,.08)'; g.lineWidth = 1.5; g.strokeRect(x + 15, 491, 90, 44);
+  g.fillStyle = '#5b3920'; g.fillRect(left, FLOOR_Y - 86, width, 80);
+  g.fillStyle = '#82562f'; g.fillRect(left, FLOOR_Y - 92, width, 9);
+  g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(left, FLOOR_Y - 92, width, 2);
+  const WP = D.wainPanel;
+  for (let x = startX(WP.step); x < left + width; x += WP.step) {
+    g.strokeStyle = 'rgba(0,0,0,.3)'; g.lineWidth = 3; g.strokeRect(x + WP.inset, FLOOR_Y - 72, WP.w, WP.h);
+    g.strokeStyle = 'rgba(255,220,170,.08)'; g.lineWidth = 1.5; g.strokeRect(x + WP.inset + 3, FLOOR_Y - 69, WP.w - 6, WP.h - 6);
   }
-  g.fillStyle = '#2f1d10'; g.fillRect(0, 552, W, 8);
+  g.fillStyle = '#2f1d10'; g.fillRect(left, FLOOR_Y - 8, width, 8);
 
   drawFloor(g, bot);
 
   // bank sign
-  g.fillStyle = '#173d2e'; g.beginPath(); rr(g, 186, 194, 348, 44, 6); g.fill();
+  const sg = D.sign;
+  g.fillStyle = '#173d2e'; g.beginPath(); rr(g, SCENE_W / 2 - sg.w / 2, sg.y, sg.w, sg.h, 6); g.fill();
   g.strokeStyle = '#d9a63a'; g.lineWidth = 3; g.stroke();
-  drawText(g, '★ FIRST NATIONAL BANK ★', W / 2, 223, 18, '#ffd66b', { stroke: false });
+  drawText(g, '★ FIRST NATIONAL BANK ★', SCENE_W / 2, sg.y + sg.h * 0.66, sg.font, '#ffd66b', { stroke: false });
 
-  drawClock(g, 92, 238, 30);
-  drawWindow(g, 600, 192, 56, 72);
-  drawPillar(g, 197);
-  drawPillar(g, 547);
-  drawDoor(g, 92, 'OFFICE', false);
-  drawDoor(g, 628, 'EXIT', true);
+  for (const [x, y, R] of D.clocks) drawClock(g, x, y, R);
+  for (const [x, y, w, h] of D.windows) drawWindow(g, x, y, w, h);
+  for (const x of D.pillars) drawPillar(g, x, D.pillarTop, D.pillarHW);
+  for (const [x, label, exit] of D.doors) drawDoor(g, x, label, exit, D.doorTop, D.doorHW);
   drawVault(g);
 }
 
 function buildBackground() {
   bgCanvas.width = canvas.width; bgCanvas.height = canvas.height;
   const g = bgCanvas.getContext('2d');
-  g.setTransform(scale, 0, 0, scale, 0, OY * scale);
+  g.setTransform(scale, 0, 0, scale, OX * scale, OY * scale);
   drawBackground(g);
 }
 
-// Foreground cover pieces, drawn in front of the characters at each spot.
+// Foreground cover pieces, drawn in front of the characters at each spot (relative to coverTop).
 function drawCover(g, sp) {
-  const x = sp.x;
+  const x = sp.x, ct = sp.coverTop;
   switch (sp.kind) {
-    case 'door': {
-      g.fillStyle = '#7d4f2b'; g.fillRect(x - 46, 488, 92, 72);
-      g.strokeStyle = 'rgba(0,0,0,.35)'; g.lineWidth = 3; g.strokeRect(x - 36, 500, 72, 46);
-      g.fillStyle = '#a06c3c'; g.fillRect(x - 52, 481, 104, 9);
-      g.fillStyle = 'rgba(255,255,255,.18)'; g.fillRect(x - 52, 481, 104, 2);
-      dot(g, x + 30, 524, 4, 4, '#e0b84a');
+    case 'door': {                                         // lower half of a stable door
+      const hw = LAY.deco.doorHW, iw = hw - 12;
+      g.fillStyle = '#7d4f2b'; g.fillRect(x - iw, ct + 2, iw * 2, FLOOR_Y - ct - 2);
+      g.strokeStyle = 'rgba(0,0,0,.35)'; g.lineWidth = 3; g.strokeRect(x - iw + 10, ct + 14, iw * 2 - 20, FLOOR_Y - ct - 28);
+      g.fillStyle = '#a06c3c'; g.fillRect(x - hw + 6, ct - 5, (hw - 6) * 2, 9);
+      g.fillStyle = 'rgba(255,255,255,.18)'; g.fillRect(x - hw + 6, ct - 5, (hw - 6) * 2, 2);
+      dot(g, x + hw - 28, ct + 38, 4, 4, '#e0b84a');
       break;
     }
-    case 'vault': {
+    case 'vault': {                                        // gold bars stacked in the vault
       const { y, r } = VAULT;
       g.save();
       g.beginPath(); g.arc(x, y, r - 1, 0, TAU); g.clip();
-      g.fillStyle = '#2a2018'; g.fillRect(x - r, 446, 2 * r, 60);
-      const rows = [{ y: 448, h: 14, off: 0 }, { y: 462, h: 14, off: 20 }, { y: 476, h: 18, off: 0 }];
+      g.fillStyle = '#2a2018'; g.fillRect(x - r, ct - 4, 2 * r, 60);
+      const rows = [{ y: ct - 2, h: 14, off: 0 }, { y: ct + 12, h: 14, off: 20 }, { y: ct + 26, h: 18, off: 0 }];
       for (const row of rows) {
         const gr = g.createLinearGradient(0, row.y, 0, row.y + row.h);
         gr.addColorStop(0, '#fff0a0'); gr.addColorStop(0.35, '#f5c542'); gr.addColorStop(1, '#a8740f');
@@ -1480,49 +1572,49 @@ function drawCover(g, sp) {
       break;
     }
     case 'counter': {
-      dot(g, x, 800, 124, 8, 'rgba(0,0,0,.22)');
-      g.fillStyle = '#6a4024'; g.fillRect(x - 108, 692, 216, 98);
+      dot(g, x, ct + 116, 124, 8, 'rgba(0,0,0,.22)');
+      g.fillStyle = '#6a4024'; g.fillRect(x - 108, ct + 8, 216, 98);
       for (let i = -1; i <= 1; i++) {
-        g.strokeStyle = 'rgba(0,0,0,.32)'; g.lineWidth = 3; g.strokeRect(x + i * 72 - 28, 704, 56, 72);
-        g.strokeStyle = 'rgba(255,220,170,.1)'; g.lineWidth = 1.5; g.strokeRect(x + i * 72 - 25, 707, 50, 66);
+        g.strokeStyle = 'rgba(0,0,0,.32)'; g.lineWidth = 3; g.strokeRect(x + i * 72 - 28, ct + 20, 56, 72);
+        g.strokeStyle = 'rgba(255,220,170,.1)'; g.lineWidth = 1.5; g.strokeRect(x + i * 72 - 25, ct + 23, 50, 66);
       }
-      g.fillStyle = '#3e2414'; g.fillRect(x - 110, 786, 220, 12);
-      const gr = g.createLinearGradient(0, 678, 0, 692);
+      g.fillStyle = '#3e2414'; g.fillRect(x - 110, ct + 102, 220, 12);
+      const gr = g.createLinearGradient(0, ct - 6, 0, ct + 8);
       gr.addColorStop(0, '#f8f4ec'); gr.addColorStop(1, '#c9bfae');
-      g.fillStyle = gr; g.fillRect(x - 118, 678, 236, 14);
-      g.fillStyle = 'rgba(0,0,0,.22)'; g.fillRect(x - 118, 690, 236, 3);
-      g.fillStyle = '#d4a940'; g.beginPath(); rr(g, x - 40, 728, 80, 22, 3); g.fill();
-      drawText(g, sp.label, x, 744, 12, '#3a2a0a', { stroke: false });
-      g.fillStyle = '#e6c25a'; g.beginPath(); g.arc(x - 100, 678, 7, Math.PI, 0); g.fill();   // service bell
-      g.fillStyle = '#8a6a20'; g.fillRect(x - 109, 677, 18, 3);
+      g.fillStyle = gr; g.fillRect(x - 118, ct - 6, 236, 14);
+      g.fillStyle = 'rgba(0,0,0,.22)'; g.fillRect(x - 118, ct + 6, 236, 3);
+      g.fillStyle = '#d4a940'; g.beginPath(); rr(g, x - 40, ct + 44, 80, 22, 3); g.fill();
+      drawText(g, sp.label, x, ct + 60, 12, '#3a2a0a', { stroke: false });
+      g.fillStyle = '#e6c25a'; g.beginPath(); g.arc(x - 100, ct - 6, 7, Math.PI, 0); g.fill();   // service bell
+      g.fillStyle = '#8a6a20'; g.fillRect(x - 109, ct - 7, 18, 3);
       break;
     }
     case 'desk': {
-      dot(g, x, 1026, 116, 8, 'rgba(0,0,0,.22)');
-      g.fillStyle = '#4a2c17'; g.fillRect(x - 100, 919, 10, 105); g.fillRect(x + 90, 919, 10, 105);
-      g.fillStyle = '#6e4426'; g.fillRect(x - 96, 919, 192, 80);
+      dot(g, x, ct + 116, 116, 8, 'rgba(0,0,0,.22)');
+      g.fillStyle = '#4a2c17'; g.fillRect(x - 100, ct + 9, 10, 105); g.fillRect(x + 90, ct + 9, 10, 105);
+      g.fillStyle = '#6e4426'; g.fillRect(x - 96, ct + 9, 192, 80);
       g.strokeStyle = 'rgba(0,0,0,.3)'; g.lineWidth = 3;
-      g.strokeRect(x - 84, 930, 76, 56); g.strokeRect(x + 8, 930, 76, 56);
-      dot(g, x - 46, 958, 6, 3, '#d2a74a'); dot(g, x + 46, 958, 6, 3, '#d2a74a');
-      g.fillStyle = '#93603a'; g.fillRect(x - 108, 906, 216, 13);
-      g.fillStyle = 'rgba(255,255,255,.18)'; g.fillRect(x - 108, 906, 216, 2);
-      g.fillStyle = '#ffffff'; g.fillRect(x - 102, 899, 28, 7);       // papers
-      g.fillStyle = '#eeeae0'; g.fillRect(x - 99, 895, 24, 5);
-      g.fillStyle = '#e9e4da'; g.fillRect(x + 76, 888, 14, 18);       // mug
-      g.strokeStyle = '#e9e4da'; g.lineWidth = 3; g.beginPath(); g.arc(x + 92, 897, 5, -Math.PI / 2, Math.PI / 2); g.stroke();
+      g.strokeRect(x - 84, ct + 20, 76, 56); g.strokeRect(x + 8, ct + 20, 76, 56);
+      dot(g, x - 46, ct + 48, 6, 3, '#d2a74a'); dot(g, x + 46, ct + 48, 6, 3, '#d2a74a');
+      g.fillStyle = '#93603a'; g.fillRect(x - 108, ct - 4, 216, 13);
+      g.fillStyle = 'rgba(255,255,255,.18)'; g.fillRect(x - 108, ct - 4, 216, 2);
+      g.fillStyle = '#ffffff'; g.fillRect(x - 102, ct - 11, 28, 7);       // papers
+      g.fillStyle = '#eeeae0'; g.fillRect(x - 99, ct - 15, 24, 5);
+      g.fillStyle = '#e9e4da'; g.fillRect(x + 76, ct - 22, 14, 18);       // mug
+      g.strokeStyle = '#e9e4da'; g.lineWidth = 3; g.beginPath(); g.arc(x + 92, ct - 13, 5, -Math.PI / 2, Math.PI / 2); g.stroke();
       break;
     }
     case 'sofa': {                                         // waiting-area leather sofa
-      dot(g, x, 1236, 126, 9, 'rgba(0,0,0,.25)');
-      g.fillStyle = '#8e2430'; g.beginPath(); rr(g, x - 110, 1112, 220, 74, 18); g.fill();
-      g.fillStyle = 'rgba(255,255,255,.12)'; g.beginPath(); rr(g, x - 102, 1116, 204, 9, 4); g.fill();
-      for (const ty of [1136, 1160]) for (let i = 0; i < 7; i++) dot(g, x - 87 + i * 29, ty, 3, 3, '#5e141d');
-      g.fillStyle = '#a32e3b'; g.beginPath(); rr(g, x - 100, 1172, 200, 32, 10); g.fill();
+      dot(g, x, ct + 116, 126, 9, 'rgba(0,0,0,.25)');
+      g.fillStyle = '#8e2430'; g.beginPath(); rr(g, x - 110, ct - 8, 220, 74, 18); g.fill();
+      g.fillStyle = 'rgba(255,255,255,.12)'; g.beginPath(); rr(g, x - 102, ct - 4, 204, 9, 4); g.fill();
+      for (const ty of [ct + 16, ct + 40]) for (let i = 0; i < 7; i++) dot(g, x - 87 + i * 29, ty, 3, 3, '#5e141d');
+      g.fillStyle = '#a32e3b'; g.beginPath(); rr(g, x - 100, ct + 52, 200, 32, 10); g.fill();
       g.fillStyle = '#8e2430';
-      g.beginPath(); rr(g, x - 124, 1140, 30, 90, 12); g.fill();
-      g.beginPath(); rr(g, x + 94, 1140, 30, 90, 12); g.fill();
-      g.fillStyle = '#5e141d'; g.beginPath(); rr(g, x - 116, 1200, 232, 30, 8); g.fill();
-      g.fillStyle = '#3a2414'; g.fillRect(x - 108, 1228, 8, 10); g.fillRect(x + 100, 1228, 8, 10);
+      g.beginPath(); rr(g, x - 124, ct + 20, 30, 90, 12); g.fill();
+      g.beginPath(); rr(g, x + 94, ct + 20, 30, 90, 12); g.fill();
+      g.fillStyle = '#5e141d'; g.beginPath(); rr(g, x - 116, ct + 80, 232, 30, 8); g.fill();
+      g.fillStyle = '#3a2414'; g.fillRect(x - 108, ct + 108, 8, 10); g.fillRect(x + 100, ct + 108, 8, 10);
       break;
     }
   }
@@ -1784,11 +1876,11 @@ function drawGun(g) {
   const k = gun.recoil;
   const r = S.reloading ? reloadPose() : null;
   const b = r ? r.blend : 0;
-  const rx = 320, ry = SCENE_H + OY - 30, ra = -0.5;           // reload pose: low, tilted to the right
+  const pose = LAY.reloadPose(GUN_PIVOT);                       // where the gun dips to while reloading
   g.save();
-  g.translate(GUN_PIVOT.x + (rx - GUN_PIVOT.x) * b, GUN_PIVOT.y + (ry - GUN_PIVOT.y) * b);
-  g.rotate(gun.angle + (ra - gun.angle) * b - k * 0.08);
-  g.scale(GUN_SCALE, GUN_SCALE);
+  g.translate(GUN_PIVOT.x + (pose.x - GUN_PIVOT.x) * b, GUN_PIVOT.y + (pose.y - GUN_PIVOT.y) * b);
+  g.rotate(gun.angle + (pose.a - gun.angle) * b - k * 0.08);
+  g.scale(LAY.gunScale, LAY.gunScale);
   g.translate(-k * 24, 0);
   drawSleeve(g);
   // magazine (only visible while reloading; slides along the grip)
@@ -1828,7 +1920,7 @@ function drawMinigun(g) {
   g.save();
   g.translate(GUN_PIVOT.x + j, GUN_PIVOT.y + j);
   g.rotate(gun.angle);
-  g.scale(GUN_SCALE, GUN_SCALE);
+  g.scale(LAY.gunScale, LAY.gunScale);
   g.translate(-gun.recoil * 8, 0);
   drawSleeve(g);
   // ammo belt
@@ -1998,56 +2090,100 @@ function drawCrosshair(g, x, y, alpha) {
    RENDER — HUD & overlays (screen coordinates)
    ===================================================================== */
 function vignette(g, rgb, a) {
-  const gr = g.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, H * 0.72);
+  const m = Math.max(W, H);
+  const gr = g.createRadialGradient(W / 2, H / 2, m * 0.24, W / 2, H / 2, m * 0.62);
   gr.addColorStop(0, `rgba(${rgb},0)`); gr.addColorStop(1, `rgba(${rgb},${a})`);
   g.fillStyle = gr; g.fillRect(0, 0, W, H);
 }
 
-// Top HUD, two rows: score / time (buttons on the right), then best / combo / level.
-function drawHUD(g) {
-  const bar = HUD_H;
+// Shared top-bar background with the time-left strip underneath.
+function hudBar(g, bar, strip) {
   g.fillStyle = 'rgba(8,10,16,0.84)'; g.fillRect(0, 0, W, bar);
   g.fillStyle = 'rgba(255,207,74,0.55)'; g.fillRect(0, bar, W, 2);
-  g.fillStyle = 'rgba(0,0,0,0.45)'; g.fillRect(0, bar + 2, W, 8);
+  g.fillStyle = 'rgba(0,0,0,0.45)'; g.fillRect(0, bar + 2, W, strip);
   g.fillStyle = S.time < 10 ? '#ff3b3b' : S.time < 20 ? '#ffb02e' : '#3ee07a';
-  g.fillRect(0, bar + 2, W * clamp(S.time / TIME_MAX, 0, 1), 8);
+  g.fillRect(0, bar + 2, W * clamp(S.time / TIME_MAX, 0, 1), strip);
+}
+function drawTimeFloaters(g, y, size) {
+  for (const f of timeFloaters) {
+    g.globalAlpha = 1 - f.t;
+    drawText(g, f.text, W / 2, y + f.t * size, size, f.color, { sw: 5 });
+  }
+  g.globalAlpha = 1;
+}
+const timeLow = () => S.time < 10 && S.mode !== 'over';
+const timePulse = () => (timeLow() ? 1 + 0.14 * Math.abs(Math.sin(S.clock * Math.PI * 2)) : 1);
 
-  const lbl = { align: 'left', stroke: false };
+function drawHUD(g) { if (LAY.name === 'port') drawHUDPort(g); else drawHUDLand(g); }
+
+// Portrait top HUD, two rows: score / time (buttons on the right), then best / combo / level.
+function drawHUDPort(g) {
+  const bar = hudH(), cx = W / 2;
+  hudBar(g, bar, 8);
+  const lbl = { align: 'left', stroke: false }, low = timeLow();
   // row 1
   drawText(g, 'SCORE', 22, 28, 17, '#b9b1a0', lbl);
   drawText(g, fmt(S.shownScore), 22, 72, 40, '#ffffff', { align: 'left', sw: 5 });
-  const low = S.time < 10 && S.mode !== 'over';
-  const pulse = low ? 1 + 0.14 * Math.abs(Math.sin(S.clock * Math.PI * 2)) : 1;
-  drawText(g, 'TIME', 360, 26, 16, low ? '#ff8080' : '#b9b1a0', { stroke: false });
-  g.save(); g.translate(360, 56); g.scale(pulse, pulse);
+  drawText(g, 'TIME', cx, 26, 16, low ? '#ff8080' : '#b9b1a0', { stroke: false });
+  g.save(); g.translate(cx, 56); g.scale(timePulse(), timePulse());
   drawText(g, S.time.toFixed(1), 0, 18, 48, low ? '#ff4040' : '#ffffff', { sw: 6 });
   g.restore();
   // row 2
   drawText(g, 'HIGH SCORE', 22, 110, 15, '#b9b1a0', lbl);
   drawText(g, fmt(Math.max(S.highScore, S.score)), 22, 142, 28, '#ffcf4a', { align: 'left', sw: 4 });
-  const cx = 300;
-  drawText(g, 'COMBO', cx, 110, 15, '#b9b1a0', lbl);
-  g.save(); g.translate(cx, 142); const cp = 1 + S.comboPulse * 0.4; g.scale(cp, cp);
+  const mx = cx - 60;
+  drawText(g, 'COMBO', mx, 110, 15, '#b9b1a0', lbl);
+  g.save(); g.translate(mx, 142); const cp = 1 + S.comboPulse * 0.4; g.scale(cp, cp);
   drawText(g, `x${S.mult}`, 0, 0, 34, COMBO_COLORS[S.mult - 1], { align: 'left', sw: 5 });
   g.restore();
   if (S.mult < 5) {
     const fill = S.streak % 3;
-    for (let i = 0; i < 3; i++) dot(g, cx + 70 + i * 17, 129, 6, 6, i < fill ? '#ffcf4a' : 'rgba(255,255,255,.18)');
+    for (let i = 0; i < 3; i++) dot(g, mx + 70 + i * 17, 129, 6, 6, i < fill ? '#ffcf4a' : 'rgba(255,255,255,.18)');
   } else {
-    drawText(g, 'MAX', cx + 64, 136, 18, '#ff4fd8', { align: 'left', stroke: false });
+    drawText(g, 'MAX', mx + 64, 136, 18, '#ff4fd8', { align: 'left', stroke: false });
   }
-  const lx = 560;
+  const lx = cx + 200;
   drawText(g, 'LEVEL', lx, 110, 15, S.levelPulse > 0 ? '#ffcf4a' : '#b9b1a0', lbl);
   g.save(); g.translate(lx, 142); const lp = 1 + S.levelPulse * 0.5; g.scale(lp, lp);
   drawText(g, String(S.level + 1), 0, 0, 34, S.levelPulse > 0 ? '#ffcf4a' : '#ffffff', { align: 'left', sw: 5 });
   g.restore();
   // time bonus / penalty floaters drift down from under the timer (below the berserk bar when active)
-  const fy = bar + (S.berserk && S.mode === 'playing' ? 92 : 44);
-  for (const f of timeFloaters) {
-    g.globalAlpha = 1 - f.t;
-    drawText(g, f.text, 360, fy + f.t * 26, 28, f.color, { sw: 5 });
+  drawTimeFloaters(g, bar + (S.berserk && S.mode === 'playing' ? 92 : 44), 28);
+}
+
+// Landscape top HUD, one row: score, high score, time (centre), combo, level, then the buttons.
+// Scaled by view.uiK so it stays readable on small screens.
+function drawHUDLand(g) {
+  const k = view.uiK, bar = hudH(), valY = bar - 8 * k, cx = W / 2;
+  hudBar(g, bar, 6);
+  const lbl = { align: 'left', stroke: false }, low = timeLow();
+  drawText(g, 'SCORE', 24, 19 * k, 12 * k, '#b9b1a0', lbl);
+  drawText(g, fmt(S.shownScore), 24, valY, 30 * k, '#ffffff', { align: 'left', sw: 4 });
+  drawText(g, 'HIGH SCORE', 250, 19 * k, 12 * k, '#b9b1a0', lbl);
+  drawText(g, fmt(Math.max(S.highScore, S.score)), 250, valY, 24 * k, '#ffcf4a', { align: 'left', sw: 4 });
+  drawText(g, 'TIME', cx, 15 * k, 11 * k, low ? '#ff8080' : '#b9b1a0', { stroke: false });
+  g.save(); g.translate(cx, valY - 12 * k); g.scale(timePulse(), timePulse());
+  drawText(g, S.time.toFixed(1), 0, 12 * k, 34 * k, low ? '#ff4040' : '#ffffff', { sw: 5 });
+  g.restore();
+  const mx = cx + 150;
+  drawText(g, 'COMBO', mx, 19 * k, 12 * k, '#b9b1a0', lbl);
+  g.save(); g.translate(mx, valY); const cp = 1 + S.comboPulse * 0.4; g.scale(cp, cp);
+  drawText(g, `x${S.mult}`, 0, 0, 30 * k, COMBO_COLORS[S.mult - 1], { align: 'left', sw: 4 });
+  g.restore();
+  if (S.mult < 5) {
+    const fill = S.streak % 3;
+    for (let i = 0; i < 3; i++) {
+      dot(g, mx + 60 * k + i * 13 * k, valY - 10 * k, 4.5 * k, 4.5 * k, i < fill ? '#ffcf4a' : 'rgba(255,255,255,.18)');
+    }
+  } else {
+    drawText(g, 'MAX', mx + 58 * k, valY - 4 * k, 16 * k, '#ff4fd8', { align: 'left', stroke: false });
   }
-  g.globalAlpha = 1;
+  const lx = cx + 295;
+  drawText(g, 'LEVEL', lx, 19 * k, 12 * k, S.levelPulse > 0 ? '#ffcf4a' : '#b9b1a0', lbl);
+  g.save(); g.translate(lx, valY); const lp = 1 + S.levelPulse * 0.5; g.scale(lp, lp);
+  drawText(g, String(S.level + 1), 0, 0, 26 * k, S.levelPulse > 0 ? '#ffcf4a' : '#ffffff', { align: 'left', sw: 4 });
+  g.restore();
+  drawTimeFloaters(g, bar + (S.berserk && S.mode === 'playing' ? 64 : 28) * k, 22 * k);
 }
 
 function hudPanel(g, x, y, w, h, hot) {
@@ -2122,7 +2258,7 @@ function drawReloadIndicator(g) {
 }
 
 function drawBerserkBar(g) {
-  const w = 440, h = 16, x = W / 2 - w / 2, y = HUD_H + 40;
+  const w = 440, h = 16, x = W / 2 - w / 2, y = hudH() + 40;
   const frac = clamp(S.berserkT / BERSERK_T, 0, 1);
   drawText(g, `BERSERK  ${S.berserkT.toFixed(1)}s`, W / 2, y - 6, 20, '#ff6a4a', { sw: 4 });
   g.fillStyle = 'rgba(0,0,0,.6)'; g.beginPath(); rr(g, x - 3, y - 3, w + 6, h + 6, h / 2 + 3); g.fill();
@@ -2148,7 +2284,7 @@ function drawBanner(g) {
   const k = t < 0.25 ? easeOutBack(t / 0.25) : 1;
   g.save();
   g.globalAlpha = clamp(t > 1.0 ? 1 - (t - 1.0) / 0.4 : 1, 0, 1);
-  g.translate(W / 2, HUD_H + (S.berserk ? 150 : 104)); g.scale(k, k);
+  g.translate(W / 2, hudH() + (S.berserk ? 150 : 104)); g.scale(k, k);
   drawText(g, b.text, 0, 0, 44, '#ffcf4a', { sw: 8 });
   drawText(g, b.sub, 0, 34, 24, '#ffffff', { sw: 5 });
   g.restore();
@@ -2178,7 +2314,7 @@ function render() {
   ctx.save();
   if (S.shake > 0 && S.mode !== 'paused') ctx.translate(rand(-1, 1) * S.shake * 0.6, rand(-1, 1) * S.shake * 0.6);
   ctx.drawImage(bgCanvas, 0, 0, W, H);
-  ctx.translate(0, OY);                              // scene space
+  ctx.translate(OX, OY);                             // scene space
   for (const row of ROWS) {
     for (const sp of row) if (sp.char) drawChar(ctx, sp.char);
     for (const sp of row) drawCover(ctx, sp);
@@ -2212,8 +2348,8 @@ function render() {
   if (S.mode === 'dying') drawDying(ctx);
 
   if (S.mode === 'playing' || S.mode === 'dying') {
-    if (aim.mouse && aim.inside) drawCrosshair(ctx, aim.x, aim.y + OY, 1);
-    else if (aim.tapT > 0) drawCrosshair(ctx, aim.x, aim.y + OY, Math.min(1, aim.tapT * 3));
+    if (aim.mouse && aim.inside) drawCrosshair(ctx, aim.x + OX, aim.y + OY, 1);
+    else if (aim.tapT > 0) drawCrosshair(ctx, aim.x + OX, aim.y + OY, Math.min(1, aim.tapT * 3));
   }
 }
 
@@ -2223,7 +2359,7 @@ function render() {
 // Screen (client) point -> scene coordinates.
 function toGame(e) {
   const r = canvas.getBoundingClientRect();
-  return { x: ((e.clientX - r.left) * W) / r.width, y: ((e.clientY - r.top) * H) / r.height - OY };
+  return { x: ((e.clientX - r.left) * W) / r.width - OX, y: ((e.clientY - r.top) * H) / r.height - OY };
 }
 function setTouchMode(on) {
   if (view.touch === on) return;
@@ -2287,8 +2423,8 @@ const ICON_SOUND_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColo
 const ICON_FS_ENTER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
 const ICON_FS_EXIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
 
-// Fullscreen + portrait lock (Android Chrome, iPad, desktop). iPhone Safari has no element
-// fullscreen; there "Add to Home Screen" gives a full-screen game.
+// Fullscreen (Android Chrome, iPad, desktop). iPhone Safari has no element fullscreen; there
+// "Add to Home Screen" gives a full-screen game. No orientation lock: both orientations play.
 const FS = {
   lastEnter: -1e9,
   supported() {
@@ -2302,9 +2438,7 @@ const FS = {
     this.lastEnter = performance.now();
     try {
       const p = d.requestFullscreen ? d.requestFullscreen({ navigationUI: 'hide' }) : d.webkitRequestFullscreen();
-      Promise.resolve(p).then(() => {
-        if (screen.orientation && screen.orientation.lock) return screen.orientation.lock('portrait');
-      }).catch(() => {});
+      Promise.resolve(p).catch(() => {});
     } catch (e) { /* refused */ }
   },
   exit() {
@@ -2358,18 +2492,16 @@ const UI = {
 function updateHudButtons() {
   $('btnPause').classList.toggle('hidden', !(S.mode === 'playing' || S.mode === 'paused'));
 }
-const isTurned = () => document.body.classList.contains('turn');
-
 let lastStartAt = -1e9;
 function startGame() {
   const now = performance.now();
-  if (now - lastStartAt < 350 || isTurned()) return;   // guard against double triggers / sideways device
+  if (now - lastStartAt < 350) return;          // guard against double triggers (key + click)
   lastStartAt = now;
   Sound.init();
-  if (view.touch || matchMedia('(pointer: coarse)').matches) FS.enter();   // phones: fullscreen, locked upright
+  if (view.touch || matchMedia('(pointer: coarse)').matches) FS.enter();   // phones / tablets: fullscreen
   resetRun();
   S.mode = 'playing';
-  aim.x = W / 2; aim.y = 700; aim.tapT = 0;
+  aim.x = LAY.aimHome.x; aim.y = LAY.aimHome.y; aim.tapT = 0;
   UI.show(null);
   Sound.play('start');
 }
@@ -2388,7 +2520,7 @@ function pauseGame() {
   UI.show('pauseScreen');
 }
 function resumeGame() {
-  if (S.mode !== 'paused' || isTurned()) return;
+  if (S.mode !== 'paused') return;
   S.mode = 'playing';
   S.inputGrace = 0.15;
   UI.show(null);
@@ -2446,33 +2578,57 @@ function drawLegend(id, look) {
    LAYOUT & MAIN LOOP
    ===================================================================== */
 const wrap = $('wrap');
+
+// Switch the bank's geometry. Characters, holes and effects belong to the old scene, so they
+// are cleared; a game in progress pauses so the player can settle into the new view.
+function applyLayout(name) {
+  const first = !LAY;
+  LAY = LAYOUTS[name];
+  SCENE_W = LAY.w; SCENE_H = LAY.h; FLOOR_Y = LAY.floorY; VAULT = LAY.vault;
+  SPOTS = LAY.spots; ROWS = LAY.rows;
+  GUN_PIVOT.x = SCENE_W / 2;
+  document.body.classList.toggle('port', name === 'port');
+  document.body.classList.toggle('land', name === 'land');
+  if (first) return;
+  chars.length = 0; S.burstQueue.length = 0;
+  holes.length = 0; particles.length = 0; popups.length = 0; tracers.length = 0; explosions.length = 0;
+  for (const sp of SPOTS) { sp.char = null; sp.cooldown = 0; }
+  aim.x = LAY.aimHome.x; aim.y = LAY.aimHome.y;
+  pauseGame();
+}
+
 let lastLayout = '';
 function resize() {
   const vw = window.innerWidth, vh = window.innerHeight;
   const coarse = matchMedia('(pointer: coarse)').matches;
   if (coarse) setTouchMode(true);
-  // Portrait only: a phone or tablet held sideways gets the "turn upright" screen and the game pauses.
-  const turned = coarse && vw > vh;
-  document.body.classList.toggle('turn', turned);
-  if (turned) pauseGame();
+  const name = vh > vw ? 'port' : 'land';        // portrait bank on tall screens, wide bank otherwise
 
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const key = [vw, vh, dpr].join('x');
+  const key = [vw, vh, dpr, name].join('x');
   if (key === lastLayout) return;
   lastLayout = key;
+  if (!LAY || LAY.name !== name) applyLayout(name);
 
-  // Tall phones get a taller world (up to ~9:19.5); wider screens get a centred 9:16 column.
-  H = clamp(Math.round((W * vh) / vw), SCENE_H, MAX_H);
-  OY = (H - SCENE_H) / 2;
-  GUN_PIVOT.y = SCENE_H + OY + 40;
+  // Fill the window: grow the logical screen around the scene (more wall to the sides or above,
+  // more floor below) until its shape matches the window. Only extreme shapes get thin bars.
+  const aspect = vw / vh;
+  let lw = SCENE_W, lh = SCENE_H;
+  if (aspect > SCENE_W / SCENE_H) lw = Math.min(SCENE_H * aspect, SCENE_W + 2 * LAY.maxOX);
+  else lh = Math.min(SCENE_W / aspect, SCENE_H + 2 * LAY.maxOY);
+  W = Math.round(lw); H = Math.round(lh);
+  OX = (W - SCENE_W) / 2; OY = (H - SCENE_H) / 2;
+  GUN_PIVOT.y = SCENE_H + OY + LAY.gunDrop;
+
   const fit = Math.min(vw / W, vh / H);
   const w = Math.max(1, Math.floor(W * fit)), h = Math.max(1, Math.floor(H * fit));
   const wl = Math.floor((vw - w) / 2), wt = Math.floor((vh - h) / 2);
-  Object.assign(view, { wl, wt, ww: w, wh: h, cssScale: w / W });
+  Object.assign(view, { wl, wt, ww: w, wh: h, cssScale: w / W, uiK: name === 'land' ? clamp(0.72 / (w / W), 1, 1.35) : 1 });
   wrap.style.width = w + 'px'; wrap.style.height = h + 'px';
   wrap.style.left = wl + 'px'; wrap.style.top = wt + 'px';
   wrap.style.setProperty('--u', (w / W) + 'px');
-  document.body.classList.toggle('short', h < 760);
+  document.body.classList.toggle('short', name === 'port' && h < 760);      // stacked menus, tightened
+  document.body.classList.toggle('compact', name === 'land' && h < 560);    // two-column menus (phones sideways)
   canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
   scale = canvas.width / W;
   buildBackground();

@@ -2,7 +2,7 @@
 
 **Shoot the robbers. Don't shoot the civilians.**
 
-A fast 2D touch shooting gallery for phones and tablets, played upright in portrait. You're the guard on duty at the First National Bank: robbers and civilians pop up from behind the counters, desks, sofas, doorways and the open vault, and you have a split second to decide who to tap.
+A fast 2D shooting gallery that plays on any screen: phones and tablets held upright or sideways, laptops and PCs. You're the guard on duty at the First National Bank: robbers and civilians pop up from behind the counters, desks, sofas, doorways and the open vault, and you have a split second to decide who to shoot.
 
 ### [Play it now at bank-heist-defender.vercel.app](https://bank-heist-defender.vercel.app/)
 
@@ -18,7 +18,7 @@ A fast 2D touch shooting gallery for phones and tablets, played upright in portr
 | 🟠 | **Bomber**: orange jumpsuit, lit bomb, glowing orange outline | Shoot him twice before the fuse runs out |
 | 🟢 | **Civilian**: bright clothes, tie or briefcase, green outline | Hold fire! One shot and it's game over |
 
-They pop up at 9 spots spread down the screen: the office door, the vault and the exit at the back, two teller counters, two desks, and two waiting-room sofas right in front of you.
+They pop up from the office door, the vault and the exit at the back, two teller counters, and two desks. On a screen held upright there are also two waiting-room sofas right in front of you.
 
 The game ends when you **shoot a civilian** or when the **clock runs out**.
 
@@ -82,13 +82,14 @@ Final score, high score, robbers caught, accuracy, highest level, longest kill s
 | Mute | Speaker button | `M` |
 | Start / play again | Tap **PLAY** | `Enter` or `Space` |
 
-### Playing on a phone or tablet
+### Any screen, any way up
 
-- The game is **portrait only**: hold your device upright. If you turn it sideways the game pauses and asks you to turn it back.
-- Tall phones get a taller view of the bank; tablets get a centred portrait screen.
-- On Android, tapping **PLAY** switches to fullscreen and locks the screen upright.
+- **Held upright** (phones, tablets): a tall bank with 9 pop-up spots stacked down the screen.
+- **Sideways or on a computer** (PCs, laptops, tablets and phones turned sideways): a wide bank with 7 spots.
+- The bank always fills the whole screen. Taller, wider or squarer screens just show more wall and floor around it, with no black bars.
+- Turning your device mid-game switches the view and pauses, so you can settle in and tap **RESUME**.
+- On Android, tapping **PLAY** switches to fullscreen.
 - On iPhone, use **Share → Add to Home Screen** to play full screen without the browser bars.
-- On a computer the game still works: it shows as a portrait screen in the middle of the window and you play with the mouse.
 
 ---
 
@@ -97,7 +98,7 @@ Final score, high score, robbers caught, accuracy, highest level, longest kill s
 The whole game is a single file, [`index.html`](index.html), with no images, libraries or build step. Everything is drawn in code and every sound is generated live.
 
 1. Download `index.html`.
-2. Open it in any modern browser (Chrome, Edge, Firefox or Safari), ideally on your phone.
+2. Open it in any modern browser (Chrome, Edge, Firefox or Safari) on your phone, tablet or computer.
 
 That's it. To host it, put `index.html` on any static host (the live version runs on Vercel).
 
