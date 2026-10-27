@@ -2,7 +2,7 @@
 
 **Shoot the robbers. Don't shoot the civilians.**
 
-A fast 2D shooting gallery game that runs in the browser on desktop and mobile. You're the guard on duty at the First National Bank: robbers and civilians pop up from behind the counters, desks, doorways and the open vault, and you have a split second to decide who to shoot.
+A fast 2D touch shooting gallery for phones and tablets, played upright in portrait. You're the guard on duty at the First National Bank: robbers and civilians pop up from behind the counters, desks, sofas, doorways and the open vault, and you have a split second to decide who to tap.
 
 ### [Play it now at bank-heist-defender.vercel.app](https://bank-heist-defender.vercel.app/)
 
@@ -17,6 +17,8 @@ A fast 2D shooting gallery game that runs in the browser on desktop and mobile. 
 | 🔴 | **Robber**: dark clothes, red ski mask, red outline, money bag | Shoot! |
 | 🟠 | **Bomber**: orange jumpsuit, lit bomb, glowing orange outline | Shoot him twice before the fuse runs out |
 | 🟢 | **Civilian**: bright clothes, tie or briefcase, green outline | Hold fire! One shot and it's game over |
+
+They pop up at 9 spots spread down the screen: the office door, the vault and the exit at the back, two teller counters, two desks, and two waiting-room sofas right in front of you.
 
 The game ends when you **shoot a civilian** or when the **clock runs out**.
 
@@ -51,7 +53,7 @@ A rare special robber that gets more common as you level up (2% at level 1, up t
 
 Hit **15 robbers in a row** without missing to go **BERSERK** for 5 seconds:
 
-- Your pistol becomes a **minigun**. **Hold** the mouse button or your finger down to fire about 15 rounds a second.
+- Your pistol becomes a **minigun**. **Hold your finger down** (or the mouse button) to fire about 15 rounds a second, and drag to sweep across the bank.
 - **Unlimited ammo**, and misses don't count against you.
 - Only robbers appear, and lots of them. Each kill is worth **+200** and **+0.5s**.
 - When it ends you get a full magazine back, and the streak starts again from zero.
@@ -72,16 +74,21 @@ Final score, high score, robbers caught, accuracy, highest level, longest kill s
 
 ## Controls
 
-| Action | Desktop | Mobile |
+| Action | Phone / tablet | Computer |
 |---|---|---|
-| Aim | Move the mouse | Tap or drag where you want to shoot |
-| Shoot | Click | Tap |
-| Minigun (Berserk) | Hold the mouse button | Hold your finger down |
-| Pause | `P` or `Esc` | Pause button |
-| Mute | `M` | Speaker button |
-| Start / play again | `Enter` or `Space` | Tap **PLAY** |
+| Shoot | Tap the target | Click |
+| Minigun (Berserk) | Hold your finger down and drag | Hold the mouse button |
+| Pause | Pause button | `P` or `Esc` |
+| Mute | Speaker button | `M` |
+| Start / play again | Tap **PLAY** | `Enter` or `Space` |
 
-**On mobile:** the game plays sideways. If you hold your phone upright the whole game turns sideways to fill the screen, so just rotate your phone. On Android, tapping PLAY switches to fullscreen. On iPhone, use **Share → Add to Home Screen** to play without the browser bars.
+### Playing on a phone or tablet
+
+- The game is **portrait only**: hold your device upright. If you turn it sideways the game pauses and asks you to turn it back.
+- Tall phones get a taller view of the bank; tablets get a centred portrait screen.
+- On Android, tapping **PLAY** switches to fullscreen and locks the screen upright.
+- On iPhone, use **Share → Add to Home Screen** to play full screen without the browser bars.
+- On a computer the game still works: it shows as a portrait screen in the middle of the window and you play with the mouse.
 
 ---
 
@@ -90,7 +97,7 @@ Final score, high score, robbers caught, accuracy, highest level, longest kill s
 The whole game is a single file, [`index.html`](index.html), with no images, libraries or build step. Everything is drawn in code and every sound is generated live.
 
 1. Download `index.html`.
-2. Open it in any modern browser (Chrome, Edge, Firefox or Safari).
+2. Open it in any modern browser (Chrome, Edge, Firefox or Safari), ideally on your phone.
 
 That's it. To host it, put `index.html` on any static host (the live version runs on Vercel).
 
